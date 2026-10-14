@@ -1,0 +1,41 @@
+name: Windows checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - name: Install locked Node dependencies
+        run: npm.cmd ci
+      - name: Install pinned Windows adapter dependencies
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Syntax and unit checks
+        shell: pwsh
+        run: |
+          npm.cmd run check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm.cmd test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm.cmd run test:native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Public package and SDK handshake (no GUI)
+        run: node scripts/release-check.mjs
