@@ -238,7 +238,7 @@ npm.cmd run smoke -- --require-window
 
 ### Continuous integration
 
-A Windows CI workflow is included in the repository. It has **not yet been executed remotely**.
+The [Windows CI workflow](https://github.com/MuhammdQasim/insta360-studio-mcp/actions/workflows/ci.yml) runs syntax checks, unit tests and a GUI-free MCP handshake. GitHub Actions shows its latest result. The optional real FFmpeg test requires configured local binaries and may be skipped in a clean environment.
 
 ## Benchmark
 
@@ -328,7 +328,7 @@ Older V1 and V2 records are kept for history only.
 
 - Media import does not check camera or mode eligibility.
 - Benchmark figures are local measurements, not token or billing figures.
-- The Windows CI workflow has not run remotely.
+- CI runs without an installed Studio app and does not replace the live workflow tests.
 
 ## Repository contents
 

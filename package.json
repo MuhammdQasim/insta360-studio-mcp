@@ -13,7 +13,7 @@
     "benchmark": "node scripts/benchmark.mjs",
     "release:check": "node scripts/release-check.mjs",
     "check": "node --check src/server.mjs && node --check src/tools.mjs && node --check src/studio.mjs && node --check src/native-client.mjs && node --check src/media.mjs && node --check scripts/smoke.mjs && node --check scripts/live-client.mjs && node --check scripts/verify-integration.mjs && node --check scripts/release-check.mjs && node --check scripts/benchmark.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/benchmark.test.mjs tests/controller.test.mjs tests/media.test.mjs tests/native-client.test.mjs tests/protocol.test.mjs tests/release-check.test.mjs tests/setup.test.mjs",
     "test:native": ".venv\\Scripts\\python.exe -m unittest discover -s tests -p test_*.py"
   },
   "dependencies": {

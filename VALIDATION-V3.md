@@ -103,3 +103,9 @@ The 21 tools have passing protocol and implementation checks, and the recorded w
 Remaining workflows include complex timeline edits, speed effects, transitions, draft management, Deep Track, Movement, Auto Frame, alternate stitching/stabilization settings, color/noise adjustments, watermark/Stats, spherical export, long/batch export, camera/cloud imports, MP3/LRV actual imports and preferences. Direct recording, multiple added audio tracks, gyroscope export and one-click AI editing remain documented Studio restrictions. Source qualifications and eligibility limits remain in [CAPABILITIES.md](CAPABILITIES.md) and `capabilities.json`.
 
 No Facebook posts, group joins or administrator messages were made. The MCP exposes no external posting or arbitrary shell/process tools.
+
+## Public package verification
+
+A fresh clone of the initial public code commit matched all 38 allowlisted files after line-ending normalization. Locked Node installation, syntax checks, the SDK handshake and 50 native checks passed. Its JavaScript suite reported 115 passes, one optional real-FFmpeg check skipped, and zero failures; the local configured suite above passed all 116. No private configuration, media or credentials were included.
+
+The first hosted Windows run exposed Node 20 treating `tests/*.test.mjs` as a literal filename. The package test command now names all seven JavaScript test files explicitly. The changed command passed all 116 local JavaScript checks. Hosted CI status is available in [GitHub Actions](https://github.com/MuhammdQasim/insta360-studio-mcp/actions/workflows/ci.yml); hosted checks use no Studio UI.
