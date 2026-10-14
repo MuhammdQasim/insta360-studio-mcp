@@ -9,7 +9,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const [exportPath, sourcePath] = process.argv.slice(2);
 if (!exportPath || !sourcePath) throw new Error('Provide existing validation export and copied source paths.');
 const connect = async () => {
-  const client = new Client({ name: 'studio-media-integration', version: '0.3.0' });
+  const client = new Client({ name: 'studio-media-integration', version: '0.4.0' });
   await client.connect(new StdioClientTransport({ command: process.execPath, args: [join(root, 'src/server.mjs')], cwd: root }));
   return client;
 };
@@ -55,6 +55,6 @@ try {
   const cancelled = await poll(long.job_id, ['cancelled', 'completed', 'failed']);
   assert.equal(cancelled.status, 'cancelled'); report.checks.owned_cancellation = cancelled;
   await fs.mkdir(join(root, 'artifacts'), { recursive: true });
-  await fs.writeFile(join(root, 'artifacts', 'media-integration-v2.json'), JSON.stringify(report, null, 2) + '\n');
+  await fs.writeFile(join(root, 'artifacts', 'media-integration-v4.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify({ ok: true, checks: Object.keys(report.checks), full_status: completed.status, cancellation_status: cancelled.status }));
 } finally { await other?.close(); await client.close(); }

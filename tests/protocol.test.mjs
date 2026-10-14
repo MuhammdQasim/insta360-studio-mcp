@@ -150,6 +150,25 @@ test('unsafe imports and invalid export intervals are rejected without backend e
   assert.equal(calls, 0);
 });
 
+test('spherical export expectation accepts only optional equirectangular and forwards it through MCP', async t => {
+  const calls = [];
+  const client = await fixture(t, async (action, args) => { calls.push({ action, args }); return { ok: true }; });
+  const { tools } = await client.listTools();
+  assert.equal(tools.length, 21);
+  const verify = tools.find(tool => tool.name === 'studio_verify_export');
+  assert.deepEqual(verify.inputSchema.properties.expected_projection.enum, ['equirectangular']);
+  assert.equal(verify.inputSchema.required?.includes('expected_projection') ?? false, false);
+  for (const expected_projection of ['flat', 'cubemap', 'tiled equirectangular', 'EQUIRECTANGULAR', null, true, {}]) {
+    assert.equal((await call(client, 'studio_verify_export', { path: 'C:\\exports\\clip.mp4', expected_projection })).isError, true);
+  }
+  assert.equal(calls.length, 0, 'Invalid projection expectations never reach the backend');
+  assert.equal((await call(client, 'studio_verify_export', { path: 'C:\\exports\\clip.mp4', expected_projection: 'equirectangular' })).isError, undefined);
+  assert.equal(calls[0].action, 'verify_export');
+  assert.equal(calls[0].args.expected_projection, 'equirectangular');
+  assert.equal((await call(client, 'studio_verify_export', { path: 'C:\\exports\\clip.mp4' })).isError, undefined);
+  assert.equal(calls[1].args.expected_projection, undefined);
+});
+
 test('concurrent MCP tool requests serialize backend calls', async t => {
   let active = 0;
   let maxActive = 0;

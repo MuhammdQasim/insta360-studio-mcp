@@ -127,7 +127,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'studio_verify_export', action: 'verify_export', title: 'Verify exported media',
-    description: 'Check stable output, optional baseline and expected settings. Quick decodes one second; full returns job_id for complete video/audio decode. Poll status for completion. File validity/change does not prove edits or Studio authorship.',
+    description: 'Check stable output, optional baseline/settings/projection. Spherical expectations require metadata, not a 2:1 image. Quick decodes one second; full returns job_id; poll status for completion. Validity/change does not prove edits or Studio authorship.',
     inputSchema: schema({
       path: z.string().min(1).max(32767), min_bytes: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).default(1024),
       stable_for_ms: z.number().int().min(250).max(10000).default(1500),
@@ -136,6 +136,7 @@ export const TOOL_DEFINITIONS = [
       expected_duration_seconds: z.number().positive().max(86400).optional(), duration_tolerance_seconds: z.number().min(0).max(10).default(0.15),
       expected_width: z.number().int().positive().max(32768).optional(), expected_height: z.number().int().positive().max(32768).optional(),
       expected_fps: z.number().positive().max(1000).optional(), expected_video_codec: z.string().regex(/^[a-zA-Z0-9_]+$/).max(50).optional(),
+      expected_projection: z.enum(['equirectangular']).optional(),
       expected_audio: z.boolean().optional(), decode_timeout_ms: z.number().int().min(1000).max(7200000).default(1800000),
     }),
     validate: (args) => {
@@ -161,7 +162,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'studio_media_info', action: 'media_info', title: 'Inspect local media',
-    description: 'Read local media duration/codecs/dimensions/FPS/streams, including MP3/WAV/LRV. Metadata does not prove camera-mode or stitching eligibility.',
+    description: 'Read local duration/codecs/dimensions/FPS/streams and declared spherical projection, including MP3/WAV/LRV. Missing projection is unknown; metadata does not prove stitching quality or camera-mode eligibility.',
     inputSchema: schema({ path: localPath }), annotations: readonly,
   },
   {

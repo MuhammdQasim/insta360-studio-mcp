@@ -377,3 +377,26 @@ test('capabilities summary is concise while full or family requests retain sourc
   const family = await controller.execute('capabilities', { family: 'trim' });
   assert.deepEqual(family.families, full.families);
 });
+
+test('capability evidence follows the newest valid record and names its actual source', async t => {
+  const { controller } = await fixture(t);
+  await fs.writeFile(join(controller.rootDir, 'capabilities.json'), JSON.stringify({ families: [
+    { id: 'deep_track', name: 'Deep Track', support: 'available_through_observed_UI' },
+  ], limitations: [] }));
+  const oldRecord = { families: { deep_track: { status: 'not_live_tested' } } };
+  await fs.writeFile(join(controller.rootDir, 'validation-v3.json'), JSON.stringify(oldRecord));
+  await fs.writeFile(join(controller.rootDir, 'validation-v4.json'), JSON.stringify({
+    families: { deep_track: { status: 'partially_live_tested', verified: ['Specific tracked test clip'] } },
+  }));
+  const latest = await controller.execute('capabilities', { family: 'deep_track' });
+  assert.equal(latest.families[0].live_validation.status, 'partially_live_tested');
+  assert.equal(latest.workflow_evidence_file, join(controller.rootDir, 'VALIDATION-V4.md'));
+  await fs.writeFile(join(controller.rootDir, 'validation-v4.json'), 'malformed record');
+  const fallback = await controller.execute('capabilities', { family: 'deep_track' });
+  assert.equal(fallback.families[0].live_validation.status, 'not_live_tested');
+  assert.equal(fallback.workflow_evidence_file, join(controller.rootDir, 'VALIDATION-V3.md'));
+  await fs.unlink(join(controller.rootDir, 'validation-v3.json'));
+  const unknown = await controller.execute('capabilities', { family: 'deep_track' });
+  assert.equal(unknown.families[0].live_validation.status, 'not_live_tested');
+  assert.equal(unknown.workflow_evidence_file, null);
+});

@@ -282,20 +282,25 @@ export class StudioController {
   async capabilities(args = {}) {
     const native = await this.native.request('status');
     const inventory = JSON.parse(await fs.readFile(join(this.rootDir, 'capabilities.json'), 'utf8'));
-    let validation = {};
-    try { validation = JSON.parse(await fs.readFile(join(this.rootDir, 'validation-v3.json'), 'utf8')); }
-    catch { try { validation = JSON.parse(await fs.readFile(join(this.rootDir, 'validation-v2.json'), 'utf8')); } catch {} }
+    let validation = {}, evidenceFile = null;
+    for (const version of [4, 3, 2]) {
+      try {
+        const candidate = JSON.parse(await fs.readFile(join(this.rootDir, `validation-v${version}.json`), 'utf8'));
+        if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) continue;
+        validation = candidate; evidenceFile = `VALIDATION-V${version}.md`; break;
+      } catch {}
+    }
     const families = inventory.families.filter(item => !args.family || item.id === args.family).map(item => ({ ...item,
       live_validation: validation.families?.[item.id] || { status: 'not_live_tested', note: 'Available UI route is not proof that this complete workflow passed.' } }));
     if (!families.length) fail('UNKNOWN_FAMILY', 'Unknown task family. Request the full studio_capabilities report to list family IDs.');
     const full = args.detail === 'full' || Boolean(args.family);
-    return { ok: true, server_version: '0.3.0', installed_version: native.installed_file_version || native.file_version || native.executable_version || null,
+    return { ok: true, server_version: '0.4.0', installed_version: native.installed_file_version || native.file_version || native.executable_version || null,
       native_adapter_version: native.adapter_version || null, target: native.executable, interaction_capabilities: native.capabilities || {},
       families: full ? families : families.map(item => ({ id: item.id, name: item.name, support: item.support, live_status: item.live_validation.status })),
       ...(full ? { limitations: inventory.limitations } : { restrictions: ['Studio only; preserve source media.',
         'Observed UI access does not prove workflow completion. Request a family or detail=full for evidence and eligibility.',
         'Inspect installed controls and verify intended edits and exports.'] }), validation_updated_at: validation.updated_at || null,
-      workflow_evidence_file: join(this.rootDir, 'VALIDATION-V3.md') };
+      workflow_evidence_file: evidenceFile ? join(this.rootDir, evidenceFile) : null };
   }
   async waitReady(args) {
     this.observation = null; this.visualFocus = null;
@@ -315,10 +320,10 @@ export class StudioController {
     if (['click', 'hover', 'press_key', 'type_text', 'set_value', 'drag', 'scroll', 'import_media'].includes(action)) return this.input(action, args);
     switch (action) {
       case 'status': return { ...(await this.native.request('status')), server: 'insta360-studio', selected_window_id: this.selected,
-        server_version: '0.3.0', native_generation: this.native.generation, session_id: this.sessionId,
+        server_version: '0.4.0', native_generation: this.native.generation, session_id: this.sessionId,
         observation_ready: Boolean(this.observation && this.clock() - this.observation.createdAt <= 120000
           && (typeof this.native.isGenerationLive !== 'function' || this.native.isGenerationLive(this.observation.generation))), logs_path: join(this.rootDir, 'logs', 'actions.jsonl'),
-        coverage: { tested_workflows_file: join(this.rootDir, 'VALIDATION-V3.md'), capability_tool: 'studio_capabilities', editing_controls: 'Observed UI controls; use family-specific live validation evidence.' } };
+        coverage: { tested_workflows_file: join(this.rootDir, 'VALIDATION-V4.md'), capability_tool: 'studio_capabilities', editing_controls: 'Observed UI controls; use family-specific live validation evidence.' } };
       case 'launch': {
         this.observation = null; this.visualFocus = null;
         const release = await this.lock();

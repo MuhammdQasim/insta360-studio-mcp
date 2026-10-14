@@ -8,6 +8,8 @@ const execFileAsync = promisify(execFile);
 const MEDIA_EXTENSION = /\.(insv|insp|lrv|mp4|mov|m4v|avi|mkv|webm|mpeg|mpg|mts|m2ts|ts|mp3|wav|m4a|aac|ogg|flac|wma|aif|aiff|jpg|jpeg|png|heic|heif|dng)$/i;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STDERR_LIMIT = 65536;
+const SPHERICAL_PROJECTIONS = new Set(['equirectangular', 'cubemap', 'tiled equirectangular',
+  'half equirectangular', 'rectilinear', 'fisheye', 'parametric immersive']);
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 function fail(code, message) { throw Object.assign(new Error(message), { code }); }
 function errorDetails(error, fallback = 'INVALID_MEDIA') {
@@ -41,6 +43,26 @@ function frameRate(value) {
     return Number.isFinite(numerator) && Number.isFinite(denominator) && denominator > 0 ? numerator / denominator : null;
   }
   return finiteNumber(value);
+}
+function signedNumber(value) {
+  if ((typeof value !== 'number' && typeof value !== 'string') || value === ''
+    || (typeof value === 'string' && (value.length > 64 || !value.trim()))) return null;
+  const number = Number(value); return Number.isFinite(number) ? number : null;
+}
+function sphericalMapping(stream) {
+  // Only FFprobe's parsed spherical side data qualifies. Dimensions and free-form tags do not.
+  const entries = Array.isArray(stream.side_data_list)
+    ? stream.side_data_list.filter(entry => entry?.side_data_type === 'Spherical Mapping') : [];
+  if (!entries.length) return { status: 'unknown', projection: null };
+  const source = 'ffprobe_stream_side_data';
+  // Multiple declarations are ambiguous; do not pick whichever would satisfy an expectation.
+  if (entries.length !== 1) return { status: 'ambiguous', projection: null, source };
+  const entry = entries[0];
+  const projection = typeof entry.projection === 'string' && entry.projection.length <= 64
+    ? entry.projection.trim().toLowerCase() : null;
+  return { status: SPHERICAL_PROJECTIONS.has(projection) ? 'reported' : 'unknown',
+    projection: SPHERICAL_PROJECTIONS.has(projection) ? projection : null, source,
+    yaw: signedNumber(entry.yaw), pitch: signedNumber(entry.pitch), roll: signedNumber(entry.roll) };
 }
 function fileSignature(info, canonicalPath) {
   return { canonical_path: canonicalPath, bytes: info.size, mtime_ms: info.mtimeMs, ctime_ms: info.ctimeMs,
@@ -121,9 +143,11 @@ export class MediaVerifier {
     } catch (error) {
       fail(error.killed ? 'MEDIA_PROBE_TIMEOUT' : 'INVALID_MEDIA', `Media could not be probed: ${String(error.message).slice(0, 4096)}`);
     }
-    const streams = metadata.streams.map(stream => ({ index: stream.index, type: stream.codec_type || 'unknown', codec: stream.codec_name || null,
+    const streams = metadata.streams.map(stream => ({ index: Number.isSafeInteger(stream.index) && stream.index >= 0 ? stream.index : null,
+      type: stream.codec_type || 'unknown', codec: stream.codec_name || null,
       ...(stream.codec_type === 'video' ? { width: finiteNumber(stream.width), height: finiteNumber(stream.height),
-        fps: frameRate(stream.avg_frame_rate) || frameRate(stream.r_frame_rate), attached_picture: Boolean(stream.disposition?.attached_pic) } : {}),
+        fps: frameRate(stream.avg_frame_rate) || frameRate(stream.r_frame_rate), attached_picture: Boolean(stream.disposition?.attached_pic),
+        spherical_mapping: sphericalMapping(stream) } : {}),
       ...(stream.codec_type === 'audio' ? { sample_rate: finiteNumber(stream.sample_rate), channels: finiteNumber(stream.channels) } : {}),
       duration_seconds: finiteNumber(stream.duration) }));
     const video = streams.find(stream => stream.type === 'video' && !stream.attached_picture) || null;
@@ -132,7 +156,7 @@ export class MediaVerifier {
       format: { name: metadata.format?.format_name || null, long_name: metadata.format?.format_long_name || null },
       duration_seconds: finiteNumber(metadata.format?.duration) ?? (durations.length ? Math.max(...durations) : null),
       video, audio_present: streams.some(stream => stream.type === 'audio'), streams,
-      limitation: 'Metadata describes the file. It does not establish visual quality, correct reframing or Studio authorship.' };
+      limitation: 'Metadata describes the file. Declared projection does not establish stitching quality or complete spherical coverage. Metadata does not establish correct reframing or Studio authorship.' };
   }
 
   async _unchanged(path, expected) {
@@ -205,6 +229,11 @@ export class MediaVerifier {
       if (typeof args.expected_audio !== 'boolean') fail('INVALID_ARGUMENT', 'expected_audio must be a boolean.');
       if (args.expected_audio !== metadata.audio_present) fail('AUDIO_MISMATCH', `Expected audio presence ${args.expected_audio}, but the file reports ${metadata.audio_present}.`);
     }
+    if (args.expected_projection !== undefined) {
+      const mapping = metadata.video.spherical_mapping;
+      if (mapping?.status !== 'reported') fail('EXPECTATION_UNVERIFIABLE', 'expected_projection cannot be checked because the playable video has no unambiguous recognized spherical mapping metadata. Dimensions alone do not establish spherical projection.');
+      if (mapping.projection !== args.expected_projection) fail('PROJECTION_MISMATCH', `Expected projection ${args.expected_projection}, but the playable video reports ${mapping.projection}.`);
+    }
   }
 
   async verify(args) {
@@ -218,6 +247,7 @@ export class MediaVerifier {
     integer(settings.decode_timeout_ms, 'decode_timeout_ms', 1, 7200000);
     if (settings.stable_for_ms > settings.timeout_ms) fail('INVALID_ARGUMENT', 'stable_for_ms cannot exceed timeout_ms.');
     if (!['quick', 'full'].includes(settings.mode)) fail('INVALID_ARGUMENT', 'mode must be quick or full.');
+    if (args.expected_projection !== undefined && args.expected_projection !== 'equirectangular') fail('INVALID_ARGUMENT', 'expected_projection must be equirectangular when supplied.');
     if (args.duration_tolerance_seconds !== undefined && (!Number.isFinite(args.duration_tolerance_seconds) || args.duration_tolerance_seconds < 0)) fail('INVALID_ARGUMENT', 'duration_tolerance_seconds must be a nonnegative finite number.');
     if (settings.mode === 'full') {
       const active = [...this.jobs.values()].filter(job => !job.settled).length;
@@ -233,16 +263,17 @@ export class MediaVerifier {
       try { metadata = await this._probe(path, stable.info); }
       catch (error) { await this._unchanged(path, stable.info); throw error; }
       this._expectations(metadata, args);
+      const decodeArgs = this._decodeArgs(path, settings.mode === 'quick', metadata);
       await this._unchanged(path, stable.info);
       const evidence = { ...metadata, stable_for_ms: stable.stable_for_ms,
         checkpoint: checkpoint ? { checkpoint_id: checkpoint.checkpoint_id, created_at: checkpoint.created_at,
           existed_before: checkpoint.existed, changed_since_checkpoint: true } : null,
         provenance: checkpoint ? 'File is new or changed relative to the checkpoint; Studio authorship is not established by this check.'
           : 'No pre-export checkpoint supplied. Verification does not establish that this is a new export.' };
-      if (settings.mode === 'full') return await this._startJob(path, stable.info, evidence, settings.decode_timeout_ms);
+      if (settings.mode === 'full') return await this._startJob(path, stable.info, evidence, settings.decode_timeout_ms, decodeArgs);
       const executable = await this._tool('ffmpeg');
       try {
-        await this.execFileFn(executable, this._decodeArgs(path, true), { windowsHide: true, shell: false, timeout: 15000, maxBuffer: 1024 * 1024 });
+        await this.execFileFn(executable, decodeArgs, { windowsHide: true, shell: false, timeout: 15000, maxBuffer: 1024 * 1024 });
       } catch (error) {
         // A concurrent write must retain its more useful error instead of becoming INVALID_MEDIA.
         await this._unchanged(path, stable.info);
@@ -254,10 +285,16 @@ export class MediaVerifier {
     } finally { if (settings.mode === 'full') this.pendingFull--; }
   }
 
-  _decodeArgs(path, quick) {
+  _decodeArgs(path, quick, metadata) {
+    // Decode the video whose metadata was checked, never an earlier attached cover picture.
+    // Full mode covers every playable video stream and all available audio streams.
+    const videos = quick ? [metadata.video] : metadata.streams.filter(stream => stream.type === 'video' && !stream.attached_picture);
+    const indices = videos.map(stream => stream?.index);
+    if (!indices.length || indices.some(index => !Number.isSafeInteger(index) || index < 0)
+      || new Set(indices).size !== indices.length) fail('VIDEO_STREAM_INDEX_UNVERIFIABLE', 'Playable video stream indices cannot be established unambiguously from FFprobe metadata.');
     return ['-hide_banner', '-nostdin', '-v', 'error', '-xerror', '-abort_on', 'empty_output+empty_output_stream', '-protocol_whitelist', 'file,pipe',
       ...(!quick ? ['-nostats', '-stats_period', '1', '-progress', 'pipe:1'] : []), '-i', path,
-      ...(quick ? ['-t', '1'] : []), '-map', quick ? '0:v:0' : '0:v', '-map', '0:a?', '-f', 'null', '-'];
+      ...(quick ? ['-t', '1'] : []), ...indices.flatMap(index => ['-map', `0:${index}`]), '-map', '0:a?', '-f', 'null', '-'];
   }
 
   _persistJob(job) {
@@ -300,7 +337,7 @@ export class MediaVerifier {
     void this._persistJob(job);
   }
 
-  async _startJob(path, baseline, evidence, timeout) {
+  async _startJob(path, baseline, evidence, timeout, decodeArgs) {
     if (this.closed) fail('SERVER_CLOSED', 'The media verifier has closed.');
     const executable = await this._tool('ffmpeg');
     const job_id = randomUUID();
@@ -314,7 +351,7 @@ export class MediaVerifier {
     this.jobs.set(job_id, job);
     job.completion = new Promise(resolve => { job.resolveCompletion = resolve; });
     try {
-      job.child = this.spawnFn(executable, this._decodeArgs(path, false), { windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'] });
+      job.child = this.spawnFn(executable, decodeArgs, { windowsHide: true, shell: false, stdio: ['ignore', 'pipe', 'pipe'] });
       job.child.once('spawn', () => { job.spawnConfirmed = true; });
       job.child.stdout?.on('data', chunk => this._progress(job, chunk));
       job.child.stderr?.on('data', chunk => {

@@ -2,7 +2,7 @@
 
 An unofficial, local [Model Context Protocol](https://modelcontextprotocol.io) server that lets an MCP client such as Codex or Claude Code observe and operate the **Insta360 Studio** desktop app on Windows.
 
-**Version:** 0.3.0
+**Version:** 0.4.0
 **Platform:** Windows only
 **License:** MIT
 
@@ -159,6 +159,16 @@ Pass all of the following to get the full original image and full text:
 { "output_detail": "full", "image_max_width": 0, "image_format": "png", "include_text": true }
 ```
 
+### Smaller images
+
+For a smaller image, start with:
+
+```json
+{ "image_max_width": 960, "include_text": "auto" }
+```
+
+The setting persists into subsequent observations and action results. The spherical-export and Deep Track workflows below used this width. Increase it to 1600 when labels or targets need more detail. The default remains 1600.
+
 ### Coordinates
 
 - `x` / `y` arguments use **pixels of the returned image**. The server maps them internally to physical screen coordinates, behind a guard.
@@ -240,6 +250,10 @@ npm.cmd run smoke -- --require-window
 
 The [Windows CI workflow](https://github.com/MuhammdQasim/insta360-studio-mcp/actions/workflows/ci.yml) runs syntax checks, unit tests and a GUI-free MCP handshake. GitHub Actions shows its latest result. The optional real FFmpeg test requires configured local binaries and may be skipped in a clean environment.
 
+### Spherical output verification
+
+Pass `expected_projection: "equirectangular"` to `studio_verify_export` when checking a spherical export. The verifier requires unambiguous parsed spherical stream metadata. A 2:1 image alone does not qualify. Missing or ambiguous evidence returns `EXPECTATION_UNVERIFIABLE`; a known different projection returns `PROJECTION_MISMATCH`. Full mode returns a job ID: poll `studio_verification_status` until `completed` with `ok: true`. Projection metadata and decoding still require separate visual review.
+
 ## Benchmark
 
 ### Running the benchmark
@@ -256,19 +270,22 @@ To run explicit capture samples, use the command below. This **activates Studio*
 npm.cmd run benchmark -- --samples 5 --observe --output artifacts\benchmark.json
 ```
 
-### Recorded local result
+### Recorded comparison with Computer Use
 
-Conditions: 5 fresh requests per profile, same footage, same window.
+Conditions: five fresh samples per profile on the same Studio Home screen. MCP used JPEG quality 85, compact output, automatic Qt UIA skipping and a 250 ms settle. Its separate warmups were excluded. Computer Use used the official Sky capture API with screenshot on and text off; all five samples, including its slower first sample, were retained.
 
-| Metric | Default profile | Full profile (original PNG + UIA, full detail) |
-|---|---|---|
-| Median latency | 374.06 ms | 424.20 ms |
-| Encoded image bytes | 177,988 | 1,125,615 |
-| Image pixels | 1,657,600 | 4,110,120 |
-| Non-image protocol JSON chars | 1,115 | 2,764 |
+| Capture profile | Median capture/request time | Returned image | Encoded image bytes |
+|---|---:|---:|---:|
+| Computer Use | 148.16 ms | 1160×714 | 66,125 |
+| MCP width 960 | 342.33 ms | 960×591 | 57,137 |
+| MCP width 1280 | 348.38 ms | 1280×788 | 87,856 |
+| MCP default width 1600 | 351.50 ms | 1600×985 | 121,672 |
 
+Default MCP capture was about 203 ms slower and produced a larger image. No per-capture speed saving was demonstrated. MCP timing includes its settling, foreground/input guards and stdio transport; Computer Use timing was measured inside the Sky capture call. Neither includes AI reasoning or the outer client tool bridge, and this is not a full editing-workflow comparison.
 
-With current v3 workflow evidence loaded, capability summaries use 10,714 protocol JSON characters versus 52,392 for full capability details.
+At width 960, [Anthropic's documented high-resolution image formula](https://platform.claude.com/docs/en/build-with-claude/vision) conditionally estimates **770 image tokens**, versus **1,092** for the Computer Use image: approximately **29.5% fewer image tokens**, or **6,440 fewer over 20 equivalent captures**. The default MCP image estimates 2,088 instead. These model-dependent dimensional estimates exclude text, tool schemas, prompts and caching; actual Claude Code and Codex billing was not measured.
+
+Earlier compact-versus-full MCP measurements are preserved in [VALIDATION-V3.md](VALIDATION-V3.md). They compare two MCP profiles and cannot establish savings against Computer Use.
 
 ### How to read these numbers
 
@@ -281,16 +298,16 @@ With current v3 workflow evidence loaded, capability summaries use 10,714 protoc
 
 ### Canonical records
 
-- [VALIDATION-V3.md](VALIDATION-V3.md)
-- [validation-v3.json](validation-v3.json)
+- [VALIDATION-V4.md](VALIDATION-V4.md)
+- [validation-v4.json](validation-v4.json)
 
-Older V1 and V2 records are kept for history only.
+Older V1, V2 and V3 records are kept for history.
 
 ### Verified locally
 
-- **Automated checks:** 166 checks pass (116 JavaScript and 50 native).
+- **Automated checks:** 177 checks pass (127 JavaScript and 50 native).
 - **Codex:** edits were performed through actual Codex tool calls.
-- **Claude Code:** actual tool-call status was verified with the official CLI.
+- **Claude Code:** a fresh official Claude Opus 5.5/high run called `studio_status` successfully and reported server/native version 0.4.0.
 
 ### Live run 1
 
@@ -306,12 +323,21 @@ Older V1 and V2 records are kept for history only.
 3. Decoded all 119 frames of the output.
 4. Inspected a decoded frame.
 
+### Spherical export and Deep Track
+
+- **Spherical Media export:** 4320×2160 HEVC at 29.97003 fps, AAC audio, declared equirectangular projection; all 118 frames decoded and two panorama frames inspected.
+- **Deep Track:** selected a clearly visible human on an isolated INSV copy, completed tracking, and exported 1920×1080 HEVC with audio; all 320 frames decoded. Four exported frames at 0.25, 3, 5 and 10 seconds retained the same subject near the center.
+- Studio's Task Center reported both exports as successful. Exact-path checkpoints established new files. Originals and copies retained their recorded hashes.
+- Earlier keyframes prevented tracking at a keyframe; removing those on the test copy resolved that eligibility issue. An obscured initial target was replaced with a clearer target. Other subjects and occlusion cases remain untested.
+
+The active Codex connection still loaded v0.3.0 for these unchanged UI contracts. Fresh SDK connections to v0.4.0 verified projection, full decoding, schemas and capture profiles. Restart connected clients to load v0.4.0.
+
 ## Limitations
 
 ### Test coverage
 
 - The live runs above **do not** cover all 27 task families.
-- Spherical export, batch export, deep tracking, and other workflows are **untested**.
+- Batch export, Project VR presets, headset playback and other workflows remain **untested**. The new tests cover one short spherical Media export and one human Deep Track export.
 - Features that are officially unsupported are listed in the [capabilities document](CAPABILITIES.md).
 
 ### Platform and version

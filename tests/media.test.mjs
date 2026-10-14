@@ -133,7 +133,7 @@ test('quick verification decodes video and optional audio without creating outpu
   assert.match(result.verification_depth, /first_second_video_and_audio/);
   assert.match(result.provenance, /No pre-export checkpoint/);
   const decode = calls.find(call => call.executable.endsWith('ffmpeg.exe'));
-  assert.deepEqual(decode.args.slice(-7), ['-map', '0:v:0', '-map', '0:a?', '-f', 'null', '-']);
+  assert.deepEqual(decode.args.slice(-7), ['-map', '0:0', '-map', '0:a?', '-f', 'null', '-']);
   assert.equal(decode.args[decode.args.indexOf('-t') + 1], '1');
   assert.equal(decode.args.includes('-nostdin'), true);
   assert.equal(decode.args.includes('-xerror'), true);
@@ -161,10 +161,150 @@ test('unavailable expectation values produce an explicit error instead of passin
   await assert.rejects(verifier.verify(quick(path, { expected_duration_seconds: 3 })), { code: 'EXPECTATION_UNVERIFIABLE' });
 });
 
+test('plain 2:1 video remains projection-unknown and cannot pass a spherical expectation', async t => {
+  const metadata = defaultMetadata();
+  Object.assign(metadata.streams[0], { width: 3840, height: 1920 });
+  const { verifier, path, calls } = await fixture(t, { metadata });
+  const result = await verifier.mediaInfo({ path });
+  assert.deepEqual(result.video.spherical_mapping, { status: 'unknown', projection: null });
+  await assert.rejects(verifier.verify(quick(path, { expected_width: 3840, expected_height: 1920,
+    expected_projection: 'equirectangular' })), { code: 'EXPECTATION_UNVERIFIABLE' });
+  assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+  assert.equal((await verifier.verify(quick(path, { expected_width: 3840, expected_height: 1920 }))).ok, true,
+    'Ordinary file verification remains available without claiming spherical projection');
+});
+
+test('parsed equirectangular spherical side data retains signed orientation and passes its expectation', async t => {
+  const metadata = defaultMetadata();
+  metadata.streams[0].side_data_list = [{ side_data_type: 'Spherical Mapping', projection: 'equirectangular',
+    yaw: -45, pitch: '-12.5', roll: -3, unrelated: 'private arbitrary value'.repeat(1000) }];
+  const { verifier, path } = await fixture(t, { metadata });
+  const result = await verifier.verify(quick(path, { expected_projection: 'equirectangular' }));
+  assert.deepEqual(result.video.spherical_mapping, { status: 'reported', projection: 'equirectangular',
+    source: 'ffprobe_stream_side_data', yaw: -45, pitch: -12.5, roll: -3 });
+  assert.deepEqual(result.streams[0].spherical_mapping, result.video.spherical_mapping);
+  assert.equal(JSON.stringify(result).includes('private arbitrary value'), false);
+  assert.equal(result.ok, true);
+});
+
+test('cubemap and partial or flat declarations do not pass a full equirectangular expectation', async t => {
+  for (const projection of ['cubemap', 'tiled equirectangular', 'half equirectangular', 'rectilinear']) {
+    const metadata = defaultMetadata();
+    metadata.streams[0].side_data_list = [{ side_data_type: 'Spherical Mapping', projection }];
+    const { verifier, path, calls } = await fixture(t, { metadata });
+    assert.equal((await verifier.mediaInfo({ path })).video.spherical_mapping.projection, projection);
+    await assert.rejects(verifier.verify(quick(path, { expected_projection: 'equirectangular' })),
+      { code: 'PROJECTION_MISMATCH' }, projection);
+    assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false, projection);
+  }
+});
+
+test('free-form tags, unrelated side data and unrecognized spherical declarations cannot qualify', async t => {
+  for (const side_data_list of [undefined, 'Spherical Mapping',
+    [{ side_data_type: 'Display Matrix', projection: 'equirectangular' }],
+    [{ side_data_type: 'Spherical Mapping', projection: 'unknown', yaw: Infinity, pitch: '', roll: false }],
+    [{ side_data_type: 'Spherical Mapping', projection: 'equirectangular'.repeat(100) }]]) {
+    const metadata = defaultMetadata();
+    metadata.format.tags = { projection: 'equirectangular', spherical: 'true' };
+    Object.assign(metadata.streams[0], { tags: { projection: 'equirectangular' }, side_data_list });
+    const { verifier, path, calls } = await fixture(t, { metadata });
+    const result = await verifier.mediaInfo({ path });
+    assert.equal(result.video.spherical_mapping.status, 'unknown');
+    assert.equal(result.video.spherical_mapping.projection, null);
+    if (result.video.spherical_mapping.source) {
+      for (const field of ['yaw', 'pitch', 'roll']) assert.equal(result.video.spherical_mapping[field], null);
+    }
+    await assert.rejects(verifier.verify(quick(path, { expected_projection: 'equirectangular' })),
+      { code: 'EXPECTATION_UNVERIFIABLE' });
+    assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+  }
+});
+
+test('cover-picture spherical metadata cannot establish projection of the playable video', async t => {
+  const metadata = defaultMetadata();
+  metadata.streams[0].index = 1; metadata.streams[1].index = 2;
+  metadata.streams.unshift({ index: 0, codec_type: 'video', codec_name: 'mjpeg', disposition: { attached_pic: 1 },
+    side_data_list: [{ side_data_type: 'Spherical Mapping', projection: 'equirectangular' }] });
+  const { verifier, path, calls } = await fixture(t, { metadata });
+  const result = await verifier.mediaInfo({ path });
+  assert.equal(result.video.index, 1);
+  assert.equal(result.streams[0].spherical_mapping.projection, 'equirectangular');
+  assert.equal(result.video.spherical_mapping.status, 'unknown');
+  await assert.rejects(verifier.verify(quick(path, { expected_projection: 'equirectangular' })),
+    { code: 'EXPECTATION_UNVERIFIABLE' });
+  assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+});
+
+test('multiple spherical declarations remain ambiguous with bounded evidence and reject before decoding', async t => {
+  const metadata = defaultMetadata();
+  metadata.streams[0].side_data_list = Array.from({ length: 1000 }, (_, index) => ({ side_data_type: 'Spherical Mapping',
+    projection: index % 2 ? 'cubemap' : 'equirectangular', yaw: index }));
+  const { verifier, path, calls } = await fixture(t, { metadata });
+  const result = await verifier.mediaInfo({ path });
+  assert.deepEqual(result.video.spherical_mapping, { status: 'ambiguous', projection: null, source: 'ffprobe_stream_side_data' });
+  assert(JSON.stringify(result.video.spherical_mapping).length < 100);
+  await assert.rejects(verifier.verify(quick(path, { expected_projection: 'equirectangular', mode: 'full' })),
+    { code: 'EXPECTATION_UNVERIFIABLE' });
+  assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+});
+
+test('full-decode job preserves declared spherical evidence through successful completion and persistence', async t => {
+  const metadata = defaultMetadata();
+  metadata.streams[0].side_data_list = [{ side_data_type: 'Spherical Mapping', projection: 'equirectangular', yaw: -90,
+    pitch: 5, roll: 0 }];
+  const { verifier, path, children, rootDir } = await fixture(t, { metadata });
+  const job = await verifier.verify(quick(path, { mode: 'full', expected_projection: 'equirectangular' }));
+  assert.equal(job.status, 'running');
+  assert.equal(job.video.spherical_mapping.projection, 'equirectangular');
+  assert.equal(job.video.spherical_mapping.yaw, -90);
+  children[0].finish(0);
+  const finished = await terminal(verifier, job.job_id);
+  assert.equal(finished.status, 'completed');
+  assert.equal(finished.ok, true);
+  assert.deepEqual(finished.video.spherical_mapping, job.video.spherical_mapping);
+  await verifier.close();
+  const saved = JSON.parse(await fs.readFile(join(rootDir, 'runtime', 'jobs', `${job.job_id}.json`), 'utf8'));
+  assert.deepEqual(saved.video.spherical_mapping, job.video.spherical_mapping);
+  assert.equal(saved.verification_depth, 'full_video_and_audio_decode');
+});
+
+test('quick decode maps the checked playable video and full mode maps every playable video while excluding covers', async t => {
+  const metadata = defaultMetadata();
+  metadata.streams[0].index = 1; metadata.streams[1].index = 2;
+  metadata.streams[0].side_data_list = [{ side_data_type: 'Spherical Mapping', projection: 'equirectangular' }];
+  metadata.streams.unshift({ index: 0, codec_type: 'video', codec_name: 'mjpeg', disposition: { attached_pic: 1 } });
+  metadata.streams.push({ index: 3, codec_type: 'video', codec_name: 'h264', width: 320, height: 180,
+    avg_frame_rate: '30/1', duration: '3' });
+  const { verifier, path, calls, children } = await fixture(t, { metadata });
+  assert.equal((await verifier.verify(quick(path, { expected_projection: 'equirectangular' }))).ok, true);
+  const quickDecode = calls.find(call => call.executable.endsWith('ffmpeg.exe'));
+  assert.deepEqual(quickDecode.args.filter((_, index, args) => args[index - 1] === '-map'), ['0:1', '0:a?']);
+  const job = await verifier.verify(quick(path, { mode: 'full', expected_projection: 'equirectangular' }));
+  const fullDecode = calls.find(call => call.spawned);
+  assert.deepEqual(fullDecode.args.filter((_, index, args) => args[index - 1] === '-map'), ['0:1', '0:3', '0:a?']);
+  children[0].finish(0);
+  assert.equal((await terminal(verifier, job.job_id)).ok, true);
+});
+
+test('missing, unsafe and duplicate playable stream indices fail before starting any decoder', async t => {
+  for (const index of [undefined, -1, '0:v:0', Number.MAX_SAFE_INTEGER + 1]) {
+    const metadata = defaultMetadata(); metadata.streams[0].index = index;
+    const { verifier, path, calls } = await fixture(t, { metadata });
+    assert.equal((await verifier.mediaInfo({ path })).video.index, null);
+    await assert.rejects(verifier.verify(quick(path)), { code: 'VIDEO_STREAM_INDEX_UNVERIFIABLE' });
+    assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+  }
+  const metadata = defaultMetadata(); metadata.streams.push({ ...metadata.streams[0] });
+  const { verifier, path, calls } = await fixture(t, { metadata });
+  await assert.rejects(verifier.verify(quick(path, { mode: 'full' })), { code: 'VIDEO_STREAM_INDEX_UNVERIFIABLE' });
+  assert.equal(calls.some(call => call.executable.endsWith('ffmpeg.exe')), false);
+});
+
 test('invalid bounds and unknown modes are rejected before any subprocess', async t => {
   const { verifier, path, calls } = await fixture(t);
   for (const extra of [{ mode: 'all' }, { min_bytes: 0 }, { stable_for_ms: -1 }, { timeout_ms: 0 },
-    { stable_for_ms: 1000, timeout_ms: 500 }, { decode_timeout_ms: 0 }, { duration_tolerance_seconds: -0.1 }]) {
+    { stable_for_ms: 1000, timeout_ms: 500 }, { decode_timeout_ms: 0 }, { duration_tolerance_seconds: -0.1 },
+    { expected_projection: 'flat' }, { expected_projection: true }, { expected_projection: 'EQUIRECTANGULAR' }]) {
     await assert.rejects(verifier.verify(quick(path, extra)), { code: 'INVALID_ARGUMENT' });
   }
   assert.equal(calls.length, 0);
@@ -244,7 +384,7 @@ test('full decode returns an immediate job and completes only after zero exit an
   const decode = calls.find(call => call.spawned);
   assert.equal(decode.args.includes('-t'), false);
   assert.equal(decode.args[decode.args.indexOf('-progress') + 1], 'pipe:1');
-  assert.equal(decode.args[decode.args.indexOf('-map') + 1], '0:v');
+  assert.equal(decode.args[decode.args.indexOf('-map') + 1], '0:0');
   assert.equal(decode.args[decode.args.indexOf('-abort_on') + 1], 'empty_output+empty_output_stream');
   assert.deepEqual(decode.options.stdio, ['ignore', 'pipe', 'pipe']);
   children[0].stdout.write('frame=90\nout_time_us=3000000\nspeed=2.0x\nprogress=end\n');

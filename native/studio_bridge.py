@@ -27,7 +27,7 @@ STUDIO_EXE = r"C:\Program Files\Insta360 Studio\Insta360 Studio.exe"
 MAX_REQUEST_BYTES = 1_048_576
 MAX_TEXT_LENGTH = 16_384
 SNAPSHOT_TTL = 120.0
-ADAPTER_VERSION = "0.3.0"
+ADAPTER_VERSION = "0.4.0"
 MOUSE_BUTTONS = {"left": (0x0002, 0x0004), "right": (0x0008, 0x0010),
                  "middle": (0x0020, 0x0040)}
 

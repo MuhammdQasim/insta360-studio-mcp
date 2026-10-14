@@ -434,10 +434,11 @@
   "limitations": [
     "Documentation was checked on 2026-10-14; the target installation is Studio 6.0.2. Sources describe current and sometimes older layouts, not a version-pinned automation API.",
     "available_through_observed_UI means the MCP has an observation and generic input route for visible Studio controls. It does not mean that the listed task family has completed a live test. Inspect the current screen before input and merge separate validation evidence.",
-    "Current local workflow evidence is in VALIDATION-V2.md and validation-v2.json. VALIDATION.md preserves the historical synthetic flat-video import/export baseline; documentation availability alone is not live workflow proof.",
+    "Current local workflow evidence is in VALIDATION-V4.md and validation-v4.json, with v3 then v2 as compatibility fallbacks when newer records are unavailable. VALIDATION.md and the v2/v3 records preserve history; documentation availability alone is not live workflow proof.",
     "File extension alone does not identify original camera mode, metadata, codec compatibility or paired-media completeness. Determine capability from media and installed controls.",
     "Exact shortcuts, split controls, color parameters, ranges and preferences must be inspected in installed Studio. Historical guide positions/ranges are not hard-coded promises.",
     "Original source media must remain intact. Delivered input and observed workflow success are separate evidence. Long exported files need appropriate full-file decoding and visual/audio review.",
+    "The optional expected_projection=equirectangular export check requires recognized unambiguous spherical stream metadata. A 2:1 image or arbitrary tag alone does not qualify; declared projection does not prove stitching quality or complete spherical coverage.",
     "The server remains limited to the pinned Studio executable and its owned dialogs; this inventory does not add arbitrary shell execution, other-app control, credentials or external publishing."
   ]
 }

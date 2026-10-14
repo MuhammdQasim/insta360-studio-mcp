@@ -12,7 +12,7 @@ const allowed = new Set(['--launch', '--require-window', '--no-observe']);
 for (const flag of flags) if (!allowed.has(flag)) throw new Error(`Unknown option: ${flag}`);
 if (flags.has('--launch') && flags.has('--no-observe')) throw new Error('--no-observe performs no GUI operations and cannot be combined with --launch.');
 
-const client = new Client({ name: 'insta360-studio-smoke', version: '0.3.0' });
+const client = new Client({ name: 'insta360-studio-smoke', version: '0.4.0' });
 const transport = new StdioClientTransport({
   command: process.execPath, args: [resolve(root, 'src/server.mjs')], cwd: root, stderr: 'pipe',
 });
