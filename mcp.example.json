@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "insta360-studio": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": ["C:\\Projects\\insta360-studio-mcp\\src\\server.mjs"]
+    }
+  }
+}

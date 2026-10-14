@@ -1,0 +1,443 @@
+{
+  "checked_on": "2026-10-14",
+  "target": "Insta360 Studio",
+  "families": [
+    {
+      "id": "media_import",
+      "name": "Local, external-device and cloud import",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/creative-import"
+      ],
+      "requires": [
+        "Existing local media or connected supported device; cloud operations require the user's existing signed-in account.",
+        "Inspect the actual Media or Project page before choosing a format or import route."
+      ],
+      "documentation_notes": [
+        "JPG, MP4, MOV, INSV, LRV and INSP are documented on both pages. DNG is excluded from Project; MP3 and WAV are excluded from Media; TIFF is unsupported.",
+        "Interval/Starlapse photo groups are Media-only. HDR/Night Shot group import has photo-count and matching INSP requirements.",
+        "Windows camera import uses USB storage; Bluetooth/wireless camera import is not supported. Format acceptance does not establish every codec/camera's compatibility."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "media_library",
+      "name": "Media library and preview",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/creative-import",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "Fresh observed Media-page state and a compatible selected file."
+      ],
+      "documentation_notes": [
+        "Media is the documented single-footage preview/rough-edit workspace.",
+        "Reopening Studio may require reimporting Media-page files; previous edit data remains saved."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "project_library",
+      "name": "Projects and reusable media libraries",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/clip-management"
+      ],
+      "requires": [
+        "Observed project creation/opening controls and compatible project media."
+      ],
+      "documentation_notes": [
+        "Project supports multi-media editing and Project/General/Temporary media libraries.",
+        "Temporary Media synchronizes many Media-page edits, but Media-page speed, logo/watermark and Stats edits do not synchronize.",
+        "Project files use .insproj; Media edit drafts use .insprj; configuration/library data may use .json."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "clip_management",
+      "name": "Alternative edit drafts",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/clip-management"
+      ],
+      "requires": [
+        "Eligible media and observed Clip Management controls; preserve original footage and existing draft data."
+      ],
+      "documentation_notes": [
+        "Create, copy, open and delete alternative clips with separate editing data. Studio always retains at least one clip.",
+        "Project migration depends on original media and expected paths; documentation cautions against arbitrary project-file renaming."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "timeline_editing",
+      "name": "Timeline arrangement and precision controls",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "A project with selected media on its timeline; observe each tool and shortcut before using it."
+      ],
+      "documentation_notes": [
+        "Timeline zoom, main-track magnet, snapping and preview axis are documented.",
+        "Split, rearrange, duplicate/delete, undo/redo and frame navigation must use observed installed controls; this source does not establish exact shortcut keys or every operation."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "trim_speed",
+      "name": "Trim, TimeShift and motion blur",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/oner/en-us/studio/editing",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "Eligible selected video; verify current trim/speed controls and their ranges in installed Studio."
+      ],
+      "documentation_notes": [
+        "The legacy official ONE R desktop guide covers trim start/end, TimeShift segment speed and motion blur.",
+        "Its listed speed values and menu positions are historical reference only; do not treat them as verified 6.0.2 controls.",
+        "Media speed edits do not synchronize to Temporary Media."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "music_audio",
+      "name": "Music, volume, fades and audio processing",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/preference-settings/audio-settings",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/creative-import"
+      ],
+      "requires": [
+        "Project page for imported MP3/WAV music, music library, volume/fades and original-video mute.",
+        "Compatible media for available Voice Focus, Noise Reduction or Denoise controls."
+      ],
+      "documentation_notes": [
+        "Official instructions describe a single added audio track, music volume, fade durations, original-audio mute and denoise.",
+        "Media audio mode and Project audio panels differ; inspect the relevant screen and camera/media eligibility."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "text_transitions",
+      "name": "Text and transitions",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "Project page and observed resource-library/timeline controls; some assets require downloading."
+      ],
+      "documentation_notes": [
+        "The Project page provides text and transition resources.",
+        "Exact fonts, transition types, duration bounds and editing controls require installed UI observation."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "reframe_fov",
+      "name": "360 reframing, FOV and projection",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/adjust-the-perspective",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/keyframe"
+      ],
+      "requires": [
+        "Eligible 360 or FreeFrame source for the requested control; distinguish spherical export from flat reframing."
+      ],
+      "documentation_notes": [
+        "360 video FOV presets include Crystal Ball, Tiny Planet, MegaView, UltraWide, Dewarp and Linear; 360-photo presets include Equirectangular Panorama.",
+        "FreeFrame video exposes UltraWide/Dewarp/Linear/Custom options. Flat DNG has its own limited FOV options.",
+        "The wide-angle MP4 restriction in this document concerns that media class; file extension alone cannot identify camera mode or eligibility. Ordinary wide-angle video cannot switch FOV/zoom through these controls; flat JPG cannot FOV/crop."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "keyframes",
+      "name": "Keyframes and camera movement parameters",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/keyframe",
+        "https://onlinemanual.insta360.com/oner/en-us/studio/editing"
+      ],
+      "requires": [
+        "Original eligible 360 video or GO 3 FreeFrame video; confirm installed media eligibility.",
+        "Flat Project aspect ratio or reframed Video export for effective keyframes."
+      ],
+      "documentation_notes": [
+        "Keyframes exist on Media and Project pages; they do not apply as flat reframing to 360 exports.",
+        "Legacy guide documents adding/deleting keyframes, angles and transition interpolation; exact current settings require observation."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "deep_track",
+      "name": "Deep Track subject tracking",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/deep-tracking-function",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/movement"
+      ],
+      "requires": [
+        "Eligible 360 video; excludes Bullet Time and Timelapse.",
+        "Observe tracking selection/results and existing Movement/Deep Track state."
+      ],
+      "documentation_notes": [
+        "Tracking is documented on Media and Project pages.",
+        "Movement and Deep Track cannot both be applied to the same clip."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "movement",
+      "name": "Movement templates",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/movement"
+      ],
+      "requires": [
+        "Studio v5.8.8 or later; eligible 360 media in a flat-aspect-ratio project.",
+        "Observed downloadable template and absence of incompatible tracking/keyframe effects."
+      ],
+      "documentation_notes": [
+        "Movement provides predefined camera effects via a resource library.",
+        "The official FAQ warns that Movement, Deep Track and keyframe effects cannot be combined freely on one clip; inspect installed eligibility before applying."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "auto_frame",
+      "name": "Auto Frame highlight analysis",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/auto-frame"
+      ],
+      "requires": [
+        "Media page; 360 video longer than 10 seconds; excludes Timelapse, Bullet Time and Slow Motion."
+      ],
+      "documentation_notes": [
+        "Generates candidate highlight clips for review/export.",
+        "Documentation says Auto Frame cannot be disabled after enabling; preserve a recoverable edit baseline before analysis.",
+        "Auto Frame does not establish one-click AI project editing."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "stitching_stabilization",
+      "name": "Stitching and stabilization",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction",
+        "https://onlinemanual.insta360.com/studio/en-us/troubleshooting/crashing-lagging-issues/studio-lag"
+      ],
+      "requires": [
+        "Original camera media with required metadata and any paired source files; inspect available stabilization/stitching settings."
+      ],
+      "documentation_notes": [
+        "Current Project documentation identifies stitching and stabilization edits as transferable from Media.",
+        "Troubleshooting confirms Stitching Optimization and Media Processing can affect performance.",
+        "Exact lens-guard/dive-case, FlowState, horizon/direction or optimization options are footage-dependent; this inventory does not mark them validated."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "image_processing_color",
+      "name": "Image processing, color and noise reduction",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/ai-processing-image-noise-reduction",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/plugin-features/studio-lut"
+      ],
+      "requires": [
+        "Compatible media and observed image/color controls; inspect source metadata and export options."
+      ],
+      "documentation_notes": [
+        "Image processing is documented; exact installed color sliders and ranges need observation.",
+        "Project v5.9.4+ enables Remove Grain automatically and removes the old checkbox; eligible newer camera media may be analyzed automatically at export.",
+        "Studio's LUT documentation describes downloadable LUTs for other applications; it does not prove a native Studio custom-LUT loader."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "watermark",
+      "name": "Brand, custom-logo and time watermark",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/watermark",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "Eligible original camera media; Project watermark support requires v5.9.4 or later.",
+        "Observed watermark/batch controls and intended logo image."
+      ],
+      "documentation_notes": [
+        "Brand watermark offers size/position/angle and appearance controls; time watermark offers opacity/date format.",
+        "Camera/brand watermark and time-watermark media restrictions differ; previously exported video may be ineligible.",
+        "Media watermark edits do not synchronize through Temporary Media."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "stats_gps",
+      "name": "GPS Stats dashboards",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/dashboard-function",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [
+        "Compatible video and GPS data or supported GPX/FIT data; Project dashboards require v5.9.4 or later.",
+        "Flat export for visible Stats; inspect time alignment and template elements."
+      ],
+      "documentation_notes": [
+        "Documents templates, metric/imperial units, default-disable preference and supported GPS sources.",
+        "Timelapse, Starlapse, TimeShift, Slow Motion and Bullet Time are excluded; templates/fields vary with version.",
+        "Stats icon-color changes and Stats time correction are not supported in Studio according to this page.",
+        "Media Stats edits do not synchronize through Temporary Media."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "export",
+      "name": "File and batch export",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/file-export-instructions"
+      ],
+      "requires": [
+        "Observed export panel, explicit destination and compatible chosen format; verify produced output."
+      ],
+      "documentation_notes": [
+        "Documents JPG/MP4/DNG/MOV/INSV export formats, custom destination and sequential local batch export.",
+        "Local batch has no documented quantity limit; cloud batch is limited to 10 files.",
+        "Source-file export requires qualifying trimmed 360 or trimmed post-stabilization media. Format lists do not imply all choices for every media type."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "task_center",
+      "name": "Task Center and export records",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/file-export-instructions"
+      ],
+      "requires": [
+        "An observed Task Center window and actual export task/record."
+      ],
+      "documentation_notes": [
+        "Task Center reports progress and successful export records.",
+        "A record or stable pre-existing file alone does not prove this run created the expected edit; check observed creation, metadata, playback and intended settings."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "vr360",
+      "name": "Spherical 360 project, Reorient and monitor",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/instructions-for-vr-panoramic-video-editing-and-export",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/keyframe"
+      ],
+      "requires": [
+        "Studio v5.6.1 or later; eligible original 360 media and 2:1 (360) project aspect ratio."
+      ],
+      "documentation_notes": [
+        "Documents Reorient, 360 Monitor and VR platform/headset export presets.",
+        "Flat reframe keyframes do not take effect in spherical 360 output."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "preferences_codecs",
+      "name": "Preferences, paths and hardware codecs",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/preference-settings/codec-settings",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/clip-management",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/creative-import",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/dashboard-function"
+      ],
+      "requires": [
+        "Observed preferences and actual hardware compatibility; keep a recoverable record before changing defaults."
+      ],
+      "documentation_notes": [
+        "Player/exporter hardware codecs, automatic hardware detection, project-file save path, external-device detection and default Stats behavior are documented.",
+        "Do not infer an encoder/decoder option is available from NVIDIA/CUDA documentation alone; observe installed hardware and UI."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "proxy_performance",
+      "name": "Proxy and preview performance",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/troubleshooting/crashing-lagging-issues/studio-lag",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/creative-import"
+      ],
+      "requires": [
+        "Project performance controls and compatible proxy/media pairing; inspect preview quality settings."
+      ],
+      "documentation_notes": [
+        "Official Windows guidance identifies Low-resolution proxy, Ultra HD Preview, hardware acceleration and stitching/processing controls.",
+        "Project low-resolution proxies and camera .lrv files are related preview media; original files remain necessary for full output."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "language",
+      "name": "Interface language",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/preference-settings/language-settings"
+      ],
+      "requires": [
+        "Observed Windows Menu > Settings > Language controls."
+      ],
+      "documentation_notes": [
+        "Studio supports language changes; menu labels/screens may differ from documentation."
+      ],
+      "support": "available_through_observed_UI"
+    },
+    {
+      "id": "audio_recording",
+      "name": "Direct audio recording in Studio",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/preference-settings/audio-settings"
+      ],
+      "requires": [],
+      "documentation_notes": [
+        "Official Studio documentation says direct recording and applying that sound to footage is not supported."
+      ],
+      "support": "not_supported_by_Studio"
+    },
+    {
+      "id": "multiple_audio_tracks",
+      "name": "Multiple added audio tracks",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/preference-settings/audio-settings",
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/page-introduction/project-page-introduction"
+      ],
+      "requires": [],
+      "documentation_notes": [
+        "Official current documentation describes only one added audio track. This restriction does not deny the existence of original video audio."
+      ],
+      "support": "not_supported_by_Studio"
+    },
+    {
+      "id": "gyro_export",
+      "name": "Export gyroscope data",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/file-management/file-export-instructions"
+      ],
+      "requires": [],
+      "documentation_notes": [
+        "Official File Export FAQ says gyroscope-data export is not supported."
+      ],
+      "support": "not_supported_by_Studio"
+    },
+    {
+      "id": "one_click_ai_edit",
+      "name": "One-click AI editing",
+      "source_urls": [
+        "https://onlinemanual.insta360.com/studio/en-us/operation-guide/edit-function/auto-frame"
+      ],
+      "requires": [],
+      "documentation_notes": [
+        "Official Studio Auto Frame FAQ says AI editing is not supported and recommends Auto Frame for candidate highlights instead."
+      ],
+      "support": "not_supported_by_Studio"
+    }
+  ],
+  "limitations": [
+    "Documentation was checked on 2026-10-14; the target installation is Studio 6.0.2. Sources describe current and sometimes older layouts, not a version-pinned automation API.",
+    "available_through_observed_UI means the MCP has an observation and generic input route for visible Studio controls. It does not mean that the listed task family has completed a live test. Inspect the current screen before input and merge separate validation evidence.",
+    "Current local workflow evidence is in VALIDATION-V2.md and validation-v2.json. VALIDATION.md preserves the historical synthetic flat-video import/export baseline; documentation availability alone is not live workflow proof.",
+    "File extension alone does not identify original camera mode, metadata, codec compatibility or paired-media completeness. Determine capability from media and installed controls.",
+    "Exact shortcuts, split controls, color parameters, ranges and preferences must be inspected in installed Studio. Historical guide positions/ranges are not hard-coded promises.",
+    "Original source media must remain intact. Delivered input and observed workflow success are separate evidence. Long exported files need appropriate full-file decoding and visual/audio review.",
+    "The server remains limited to the pinned Studio executable and its owned dialogs; this inventory does not add arbitrary shell execution, other-app control, credentials or external publishing."
+  ]
+}

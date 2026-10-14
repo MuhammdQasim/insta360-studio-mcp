@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "package_name": "insta360-studio-mcp",
+  "required_files": [
+    ".gitignore", ".github/workflows/ci.yml", "AGENTS.md", "README.md", "CAPABILITIES.md", "capabilities.json",
+    "VALIDATION.md", "VALIDATION-V2.md", "validation-v2.json", "VALIDATION-V3.md", "validation-v3.json", "package.json", "package-lock.json", "requirements.txt",
+    "setup.ps1", "config.example.json", "mcp.example.json", "release-manifest.json",
+    "src/media.mjs", "src/native-client.mjs", "src/server.mjs", "src/studio.mjs", "src/tools.mjs",
+    "native/studio_bridge.py", "scripts/live-client.mjs", "scripts/release-check.mjs", "scripts/smoke.mjs", "scripts/verify-integration.mjs", "scripts/benchmark.mjs",
+    "tests/controller.test.mjs", "tests/media.test.mjs", "tests/native-client.test.mjs", "tests/protocol.test.mjs",
+    "tests/release-check.test.mjs", "tests/setup.test.mjs", "tests/test_native.py", "tests/benchmark.test.mjs"
+  ],
+  "optional_files": ["LICENSE", "SECURITY.md", "CONTRIBUTING.md", "CHANGELOG.md"]
+}

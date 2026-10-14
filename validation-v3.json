@@ -1,0 +1,525 @@
+{
+  "updated_at": "2026-10-14",
+  "server_version": "0.3.0",
+  "studio_version": "6.0.2.0",
+  "automated_checks": {
+    "javascript": 116,
+    "native": 50,
+    "total": 166,
+    "syntax": "passed"
+  },
+  "evidence_file": "VALIDATION-V3.md",
+  "families": {
+    "media_import": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Copied INSV Media import and preview",
+        "WAV and MP4 multi-file Project import"
+      ],
+      "remaining": [
+        "MP3/LRV actual imports",
+        "camera/cloud and all camera modes"
+      ]
+    },
+    "media_library": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Local Media selection, double-click preview, seek",
+        "Three repeated RIGHT keys advance three frames"
+      ],
+      "remaining": [
+        "All library-management operations"
+      ]
+    },
+    "project_library": {
+      "status": "partially_live_tested",
+      "verified": [
+        "New named 16:9 project and media library import",
+        "Reopened the isolated saved Project in version 0.3"
+      ],
+      "remaining": [
+        "Relocate/archive and reusable library workflows"
+      ]
+    },
+    "timeline_editing": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Timed multi-selection drag places video and WAV on separate tracks",
+        "Short Project export with video, original audio, added WAV and basic title; full decoded"
+      ],
+      "remaining": [
+        "Split/reorder/ripple and complex timeline edits"
+      ]
+    },
+    "trim_speed": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Media Trim end (O); output duration 3.937267 seconds"
+      ],
+      "remaining": [
+        "Trim start, speed and motion-blur effects"
+      ]
+    },
+    "music_audio": {
+      "status": "partially_live_tested",
+      "verified": [
+        "WAV import and added audio-track placement",
+        "AAC retained in Media export and full decoded",
+        "Project output retains AAC stereo audio and passes full video/audio decode"
+      ],
+      "remaining": [
+        "Audible Project mix, relative volume, fades and denoise"
+      ]
+    },
+    "reframe_fov": {
+      "status": "partially_live_tested",
+      "verified": [
+        "360 preview yaw changed by timed/polyline drags",
+        "Flat 1080p exported frames inspected"
+      ],
+      "remaining": [
+        "All FOV modes, numeric values and camera modes"
+      ]
+    },
+    "keyframes": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Two yaw keyframes +8.2 and -3.5 degrees, visible markers, flat export"
+      ],
+      "remaining": [
+        "All interpolation types, editing/removal and Project variants"
+      ]
+    },
+    "stitching_stabilization": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Copied dual-stream INSV produces stitched flat preview and export"
+      ],
+      "remaining": [
+        "Alternate stitching/stabilization settings and rigorous quality assessment"
+      ]
+    },
+    "export": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Flat Media export with exact destination, checkpoint and expected settings",
+        "Quick/full video and audio decode",
+        "Wrong setting/unchanged file rejection",
+        "Owned decoder cancellation and foreign-session rejection",
+        "New short Project H.264 export with exact destination, nonexistent checkpoint and explicit expected settings",
+        "Owned folder-picker UIA value readback",
+        "Full Project decode completed with 119 frames; title frame inspected"
+      ],
+      "remaining": [
+        "Spherical, long and batch exports"
+      ]
+    },
+    "audio_recording": {
+      "status": "documented_unsupported",
+      "note": "Official Studio documentation states this feature is unsupported; it is not a pending MCP workflow test."
+    },
+    "multiple_audio_tracks": {
+      "status": "documented_unsupported",
+      "note": "Official documentation limits added audio to one track. Original video audio is separate."
+    },
+    "gyro_export": {
+      "status": "documented_unsupported",
+      "note": "Official Studio export documentation states that gyroscope export is unsupported."
+    },
+    "one_click_ai_edit": {
+      "status": "documented_unsupported",
+      "note": "Official documentation distinguishes candidate Auto Frame highlights from unsupported one-click AI editing."
+    },
+    "text_transitions": {
+      "status": "partially_live_tested",
+      "verified": [
+        "Text > Basic title added to isolated Project",
+        "Guarded screenshot replacement sets MCP validation; inspected output frame shows the title"
+      ],
+      "remaining": [
+        "Other text styles/fonts/animation and transitions"
+      ]
+    },
+    "clip_management": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "deep_track": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "movement": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "auto_frame": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "image_processing_color": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "watermark": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "stats_gps": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "task_center": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "vr360": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "preferences_codecs": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "proxy_performance": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    },
+    "language": {
+      "status": "not_live_tested",
+      "verified": [],
+      "remaining": [
+        "Complete workflow has not been live validated"
+      ]
+    }
+  },
+  "tool_count": 21,
+  "clients": {
+    "codex": {
+      "status": "actual_tool_calls_verified",
+      "server_version": "0.3.0",
+      "evidence": "Direct MCP status and isolated Project editing/export workflow"
+    },
+    "claude_code": {
+      "status": "actual_tool_call_verified",
+      "server_version": "0.3.0",
+      "scope": "user",
+      "model": "Claude Opus 5.5",
+      "effort": "high",
+      "evidence": "Official CLI connection check and model-issued studio_status tool call",
+      "billing_limit": "Session/cache usage is not MCP-only token consumption"
+    },
+    "sdk_auto_observe": {
+      "status": "actual_tool_call_verified",
+      "server_version": "0.3.0",
+      "requested_include_text": "auto",
+      "resolved_include_text": false,
+      "accessibility_payload_present": false,
+      "image_format": "jpeg",
+      "image_width": 1600,
+      "image_height": 1036,
+      "physical_width": 2520,
+      "physical_height": 1631,
+      "coordinate_space": "returned image pixels relative to window",
+      "evidence": "Fresh SDK stdio session observed the Studio Qt window"
+    }
+  },
+  "coverage_counts": {
+    "partially_live_tested": 11,
+    "documented_unsupported": 4,
+    "not_live_tested": 12
+  },
+  "project_export": {
+    "file_state": "absent_before_export_present_after_export",
+    "size_bytes": 13715884,
+    "video": {
+      "codec": "h264",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "duration_seconds": 3.966667,
+      "decoded_frames": 119
+    },
+    "audio": {
+      "codec": "aac",
+      "channels": 2,
+      "sample_rate": 48000,
+      "duration_seconds": 3.946833
+    },
+    "full_verification": {
+      "status": "completed",
+      "ok": true,
+      "ffmpeg_exit_code": 0,
+      "elapsed_ms": 621
+    },
+    "visual_review": {
+      "frame_seconds": 1,
+      "result": "MCP validation title visible over footage"
+    },
+    "limitations": [
+      "Audible mix, fades and denoise not assessed",
+      "Other title styles and transitions not assessed",
+      "Short isolated Project only"
+    ]
+  },
+  "capture_defaults": {
+    "fresh_capture": true,
+    "image_format": "jpeg",
+    "jpeg_quality": 85,
+    "image_max_width": 1600,
+    "upscaling": false,
+    "output_detail": "compact",
+    "coordinates": "returned image pixels relative to window",
+    "physical_mapping": "integer floor applied once before physical guards",
+    "include_text": "automatic: native Windows dialogs enabled, Studio Qt windows disabled",
+    "cache": false
+  },
+  "benchmarks": {
+    "footage_visible": {
+      "ok": true,
+      "samples_per_profile": 5,
+      "editing_input_calls": 0,
+      "profiles": [
+        {
+          "name": "list_tools",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 2.004,
+          "p95_latency_ms": 2.461,
+          "non_image_json_characters_p50": 17703,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "status",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 26.57,
+          "p95_latency_ms": 142.754,
+          "non_image_json_characters_p50": 4156,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_summary",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 26.248,
+          "p95_latency_ms": 26.999,
+          "non_image_json_characters_p50": 10702,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_full",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 25.197,
+          "p95_latency_ms": 25.433,
+          "non_image_json_characters_p50": 51240,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "observe_fast",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 374.061,
+          "p95_latency_ms": 398.84,
+          "non_image_json_characters_p50": 1115,
+          "image_encoded_bytes_p50": 177988,
+          "image_pixels_p50": 1657600
+        },
+        {
+          "name": "observe_full",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 424.196,
+          "p95_latency_ms": 563.446,
+          "non_image_json_characters_p50": 2764,
+          "image_encoded_bytes_p50": 1125615,
+          "image_pixels_p50": 4110120
+        }
+      ],
+      "family_evidence": "version_0.2_fallback_before_version_0.3_evidence_file"
+    },
+    "black_preview": {
+      "ok": true,
+      "samples_per_profile": 5,
+      "editing_input_calls": 0,
+      "profiles": [
+        {
+          "name": "list_tools",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 1.818,
+          "p95_latency_ms": 2.256,
+          "non_image_json_characters_p50": 17703,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "status",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 31.627,
+          "p95_latency_ms": 172.77,
+          "non_image_json_characters_p50": 4156,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_summary",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 31.478,
+          "p95_latency_ms": 31.552,
+          "non_image_json_characters_p50": 10702,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_full",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 32.068,
+          "p95_latency_ms": 33.29,
+          "non_image_json_characters_p50": 51240,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "observe_fast",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 379.988,
+          "p95_latency_ms": 457.965,
+          "non_image_json_characters_p50": 1115,
+          "image_encoded_bytes_p50": 121819,
+          "image_pixels_p50": 1657600
+        },
+        {
+          "name": "observe_full",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 374.908,
+          "p95_latency_ms": 522.27,
+          "non_image_json_characters_p50": 2762,
+          "image_encoded_bytes_p50": 319861,
+          "image_pixels_p50": 4110120
+        }
+      ],
+      "family_evidence": "version_0.2_fallback_before_version_0.3_evidence_file"
+    },
+    "earlier_exploratory_run": {
+      "ok": false,
+      "default_observation_successful_samples": 3,
+      "default_observation_failed_samples": 2,
+      "error_codes": [
+        "scope_denied",
+        "manual_input_detected"
+      ],
+      "disposition": "Retained failures; excluded from claims of successful performance"
+    },
+    "billed_tokens_measured": false,
+    "limitations": [
+      "Five sequential samples per profile on one local computer",
+      "Initial status includes native startup",
+      "Provider image tokenization, prompts and cached context not measured",
+      "Characters divided by four is a text estimate only",
+      "Black-preview default observation was slightly slower than full capture"
+    ],
+    "metadata_current": {
+      "ok": true,
+      "samples_per_profile": 5,
+      "observation_enabled": false,
+      "editing_input_calls": 0,
+      "family_evidence": "version_0.3",
+      "profiles": [
+        {
+          "name": "list_tools",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 1.818,
+          "p95_latency_ms": 2.39,
+          "non_image_json_characters_p50": 17703,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "status",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 30.175,
+          "p95_latency_ms": 144.014,
+          "non_image_json_characters_p50": 4156,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_summary",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 31.221,
+          "p95_latency_ms": 32.407,
+          "non_image_json_characters_p50": 10714,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        },
+        {
+          "name": "capabilities_full",
+          "successful_samples": 5,
+          "failed_samples": 0,
+          "p50_latency_ms": 31.048,
+          "p95_latency_ms": 31.208,
+          "non_image_json_characters_p50": 52392,
+          "image_encoded_bytes_p50": 0,
+          "image_pixels_p50": 0
+        }
+      ]
+    }
+  },
+  "external_posting": {
+    "facebook_posts": 0,
+    "facebook_group_joins": 0,
+    "administrator_messages": 0,
+    "status": "held_per_user_instruction"
+  },
+  "source_preservation": {
+    "status": "original_and_isolated_copy_reverified_unchanged",
+    "sha256": "2425C7B352CC1396568E35BA5964FB77EDF1BC0E0CB9180D7BE1CE9D4CAEAC77",
+    "matches_recorded_pre_edit_baseline": true
+  }
+}

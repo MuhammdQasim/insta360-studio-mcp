@@ -1,0 +1,23 @@
+{
+  "updated_at": "2026-10-14",
+  "server_version": "0.2.0",
+  "studio_version": "6.0.2.0",
+  "automated_checks": { "javascript": 65, "native": 33, "total": 98 },
+  "evidence_file": "VALIDATION-V2.md",
+  "families": {
+    "media_import": { "status": "partially_live_tested", "verified": ["Copied INSV Media import and preview", "WAV and MP4 multi-file Project import"], "remaining": ["MP3/LRV actual imports", "camera/cloud and all camera modes"] },
+    "media_library": { "status": "partially_live_tested", "verified": ["Local Media selection, double-click preview, seek", "Three repeated RIGHT keys advance three frames"], "remaining": ["All library-management operations"] },
+    "project_library": { "status": "partially_live_tested", "verified": ["New named 16:9 project and media library import"], "remaining": ["Reopen/relocate/archive and reusable library workflows"] },
+    "timeline_editing": { "status": "partially_live_tested", "verified": ["Timed multi-selection drag places video and WAV on separate tracks"], "remaining": ["Split/reorder/ripple, complex edits, Project export"] },
+    "trim_speed": { "status": "partially_live_tested", "verified": ["Media Trim end (O); output duration 3.937267 seconds"], "remaining": ["Trim start, speed and motion-blur effects"] },
+    "music_audio": { "status": "partially_live_tested", "verified": ["WAV import and added audio-track placement", "AAC retained in Media export and full decoded"], "remaining": ["Audible Project mix, volume/fades/denoise and Project export"] },
+    "reframe_fov": { "status": "partially_live_tested", "verified": ["360 preview yaw changed by timed/polyline drags", "Flat 1080p exported frames inspected"], "remaining": ["All FOV modes, numeric values and camera modes"] },
+    "keyframes": { "status": "partially_live_tested", "verified": ["Two yaw keyframes +8.2 and -3.5 degrees, visible markers, flat export"], "remaining": ["All interpolation types, editing/removal and Project variants"] },
+    "stitching_stabilization": { "status": "partially_live_tested", "verified": ["Copied dual-stream INSV produces stitched flat preview and export"], "remaining": ["Alternate stitching/stabilization settings and rigorous quality assessment"] },
+    "export": { "status": "partially_live_tested", "verified": ["Flat Media export with exact destination, checkpoint and expected settings", "Quick/full video and audio decode", "Wrong setting/unchanged file rejection", "Owned decoder cancellation and foreign-session rejection"], "remaining": ["Project, spherical, long and batch exports"] },
+    "audio_recording": { "status": "documented_unsupported", "note": "Official Studio documentation states this feature is unsupported; it is not a pending MCP workflow test." },
+    "multiple_audio_tracks": { "status": "documented_unsupported", "note": "Official documentation limits added audio to one track. Original video audio is separate." },
+    "gyro_export": { "status": "documented_unsupported", "note": "Official Studio export documentation states that gyroscope export is unsupported." },
+    "one_click_ai_edit": { "status": "documented_unsupported", "note": "Official documentation distinguishes candidate Auto Frame highlights from unsupported one-click AI editing." }
+  }
+}
